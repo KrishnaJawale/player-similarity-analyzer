@@ -32,16 +32,9 @@ df = df.reset_index(drop=True)
 df = df.fillna(0)
 
 #list of relevant columns (not to normalize)
-columns = ["Player", "90s", "Age", "Squad", "Nation"] # "Pos", "Nation", "Squad", "Comp", "Age", "Born"]
+columns = ["Player", "90s", "Age", "Squad", "Nation"]
 
-#list of relevant stats (need to be normalized per 90 minutes)
-#stats_normalize = ["Gls", "Ast", "G+A", "xG", "xAG", "npxG", "G-PK", "SCA", "PassLive", "TO", "Fld", "GCA", "Tkl", "TklW", "Blocks", 
-#                      "Int", "Tkl+Int", "Clr", "Err", "Cmp", "TotDist", "PrgDist", "PrgP", "PrgC", "CPA", "KP", "Tkld",
-#                      "Sh", "SoT", "G/Sh",
-#                      "Ast_stats_passing", "xA", "PPA", "GA", "Saves", "PKA", "PKsv", "Touches", "Carries", "Rec", "PrgR",
-#                      "Def 3rd", "Mid 3rd", "Att 3rd", "Att Pen", "Succ", "Mis", "Dis", "PKwon", "PKcon", "Recov"]
-#stats_no_normalize = ["Cmp%", "Save%", "CS%", "Succ%", "Tkld%", "SoT%", "CS"]
-
+#list of relevant stats (need to normalize per 90 minutes)
 #defensive stats - centerbacks, fullbacks, midfielders
 defensive_stats = ["Tkl", "TklW", "Blocks_stats_defense", "Sh_stats_defense", "Pass", "Def 3rd", "Clr", "Def"] #"Mid 3rd", "Att 3rd", Tkl%
 #passing stats - midfielders
@@ -77,7 +70,7 @@ for stat in all_stats:
         df[stat] = round(df[stat] / df["90s"], 2)
 
 
-def get_similar_players (player_name, metrics, minAge, maxAge, usePCA):
+def get_similar_players (player_name, metrics, weights, minAge, maxAge, usePCA):
     # Use stats specified by metrics
     stats = []
     for metric in metrics:
@@ -98,6 +91,19 @@ def get_similar_players (player_name, metrics, minAge, maxAge, usePCA):
     # It gives best results when outliers are minimal or absent as it is sensitive to extreme values. 
     scaler = MinMaxScaler()
     X = scaler.fit_transform(data[stats])
+
+    # Apply metric weighting
+    # create weights multiplier array (defaulted to 1)
+    weights_multiplier = np.ones(len(stats))
+    # for each selected metric, loop through each stat within the metric
+    for metric in metrics:
+        for stat in stats_dict[metric]:
+            # for each stat, find stat index, set assign index in weights multiplier to selected weight for the metric it belongs to
+            stat_indx = stats.index(stat)
+            weights_multiplier[stat_indx] = weights[metric]
+    
+    # multiply scaled data by the weights multiplier array
+    X = X * weights_multiplier
 
     # Get reduced player vectors using PCA
     # These 2 lines change the result using principal component analysis

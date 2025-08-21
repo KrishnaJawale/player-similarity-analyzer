@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Dict, Optional
 
 from player_similarity import get_similar_players 
 
@@ -16,17 +16,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class MetricsRequest(BaseModel):
+class Item(BaseModel):
     selectedMetrics: List[str]
+    metricWeights: Dict[str, float]
     minAge: int
     maxAge: int
     PCA: bool
 
 
 @app.post("/similar_players")
-def similar_players (player: str = Query(...), body: MetricsRequest = ...):
+def similar_players (player: str = Query(...), body: Item = ...):
     metrics = body.selectedMetrics
+    weights = body.metricWeights
     minAge = body.minAge
     maxAge = body.maxAge
     PCA = body.PCA
-    return get_similar_players(player, metrics, minAge, maxAge, PCA)
+    return get_similar_players(player, metrics, weights, minAge, maxAge, PCA)

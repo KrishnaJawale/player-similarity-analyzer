@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Box, Typography, TextField, Stack, Button, List, ListItem, ListItemText, Grid,
-    FormControl, FormControlLabel, InputLabel, Select, MenuItem, Chip, OutlinedInput, Checkbox
+    FormControl, FormControlLabel, InputLabel, Select, MenuItem, Chip, OutlinedInput, Checkbox, Slider
 } from '@mui/material';
 import { RadarChart } from '@mui/x-charts/RadarChart';
 
@@ -14,6 +14,7 @@ function App() {
     const [minAge, setMinAge] = useState();
     const [maxAge, setMaxAge] = useState();
     const [selectedMetrics, setSelectedMetrics] = useState([]);
+    const [metricWeights, setMetricWeights] = useState({});
     const comparisonMetrics = [
         "Defensive",
         "Passing",
@@ -39,7 +40,8 @@ function App() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    selectedMetrics,
+                    selectedMetrics: selectedMetrics,
+                    metricWeights: metricWeights,
                     minAge: minAge ? minAge : 0,
                     maxAge: maxAge ? maxAge : 50,
                     PCA: PCA
@@ -70,17 +72,37 @@ function App() {
     }
 
     const handleChangeMetrics = (e) => {
-        const {
-            target: { value }
-        } = e;
-        setSelectedMetrics(typeof value === "string" ? value.split(",") : value);
-        console.log(selectedMetrics);
+        const newSelected = e.target.value;
+        console.log(newSelected);
+        setSelectedMetrics(newSelected);
+
+        //If a new metric has been selected, add it to metric weights object, default weight to 1 (max)
+        const newWeights = {...metricWeights};
+        newSelected.forEach((metric) => {
+            if (!(metric in newWeights)) {
+                newWeights[metric] = 1;
+            }
+        });
+
+        //If a metric has been deselected, remove it from metric weights object
+        Object.keys(newWeights).forEach((metric) => {
+            if (!newSelected.includes(metric)) {
+                delete newWeights[metric];
+            }
+        })
+
+        setMetricWeights(newWeights);
+    }
+
+    const handleChangeWeights = (change) => (e, newWeight) => {
+        setMetricWeights((prev) => ({...prev, [change]: newWeight}));
+        console.log(metricWeights);
     }
 
     return (
-        <Stack sx={{mt:6}} spacing={3}>
+        <Stack sx={{mt:6, mb:6}} spacing={3}>
             <Box sx={{display: "flex", justifyContent: "center"}}>
-                <Typography variant="h3">Player Similarity Analysis</Typography>
+                <Typography variant="h3">Player Playstyle Scouting</Typography>
             </Box>
             <Grid container spacing={4} sx={{display: "flex", justifyContent: "center"}}>
                 <TextField
@@ -92,7 +114,9 @@ function App() {
                     }}
                 >
                 </TextField>
-                <FormControl sx={{ m: 1, width: 400 }}>
+            </Grid>
+            <Grid container spacing={4} sx={{display: "flex", justifyContent: "center"}}>
+                <FormControl sx={{ m: 1, width: 600 }}>
                     <InputLabel>Comparison Metrics</InputLabel>
                     <Select
                         multiple
@@ -104,11 +128,20 @@ function App() {
                         renderValue={(selected) => (
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                 {selected.map((value) => (
-                                    <Chip key={value} label={value} />
+                                    <>
+                                        <Chip color="success" variant="outlined" key={value} label={value} />
+                                        <Slider
+                                            size="small"
+                                            min={0}
+                                            max={1}
+                                            step={0.1}
+                                            value={metricWeights[value]}
+                                            onChange={handleChangeWeights(value)}
+                                        />
+                                    </>
                                 ))}
                             </Box>
                         )}
-                        //MenuProps={MenuProps}
                     >
                         {comparisonMetrics.map((field) => (
                             <MenuItem
