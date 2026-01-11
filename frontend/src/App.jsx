@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Box, Typography, TextField, Stack, Button, List, ListItem, ListItemText, Grid,
-    FormControl, FormControlLabel, InputLabel, Select, MenuItem, Chip, OutlinedInput, Checkbox, Slider
+    FormControl, FormControlLabel, InputLabel, Select, MenuItem, Chip, OutlinedInput, Checkbox, Slider, Link
 } from '@mui/material';
 import { RadarChart } from '@mui/x-charts/RadarChart';
 
@@ -104,9 +104,22 @@ function App() {
     return (
         <Stack sx={{mt:10, mb:6}} spacing={3}>
             <Stack sx={{display: "flex", justifyContent: "center", alignItems: "center", gap: 0.5}}>
-                <Typography variant="subtitle1" sx={{width: 600, color: "#ffc107"}}>Krishna Jawale</Typography>
-                <Typography variant="subtitle1" sx={{width: 600, color: "#1db954"}}>Soccer Playstyle Scout 24/25</Typography>
-                <Typography variant="subtitle1" sx={{width: 600}}>A tool that takes in a player name, selected playstyle metrics and custom weights, then uses machine learning to compute and return the 10 most similar players based on the selected parameters. Uses player data from the top 5 leagues during the 24/25 season.</Typography>
+                <Typography variant="subtitle1" color= "#ffc107" sx={{width: 600}}>Krishna Jawale</Typography>
+                <Typography variant="subtitle1" color="primary" sx={{width: 600}}>Soccer Playstyle Scout 24/25</Typography>
+                <Typography variant="subtitle1" sx={{width: 600}}>A tool that takes in a player name, selected playstyle metrics and custom weights, then uses machine learning to compute and return
+                    the 10 most similar players based on the selected parameters. Uses player data from the top 5 leagues during the 24/25 season.
+                    GitHub repo {" " }
+                        <Link
+                            href="https://github.com/KrishnaJawale/player-similarity-analyzer"
+                            target="_blank"
+                            rel="noopener"
+                            underline="always"
+                            color="primary"
+                        >
+                            here
+                        </Link>
+                        .
+                    </Typography>
             </Stack>
             <Grid container spacing={4} sx={{display: "flex", justifyContent: "center"}}>
                 <TextField
