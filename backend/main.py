@@ -10,7 +10,7 @@ app = FastAPI()
 # Allow CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://player-similarity-analyzer.vercel.app/"],  # frontend
+    allow_origins=["https://player-similarity-analyzer.vercel.app"],  # frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
