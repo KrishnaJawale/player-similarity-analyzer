@@ -4,6 +4,8 @@ import { Box, Typography, TextField, Stack, Button, List, ListItem, ListItemText
 } from '@mui/material';
 import { RadarChart } from '@mui/x-charts/RadarChart';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
     //player search
     const [playerSearch, setPlayerSearch] = useState("")
@@ -34,7 +36,7 @@ function App() {
             const params = new URLSearchParams();
             params.append("player", playerSearch);
 
-            const res = await fetch (`http://localhost:8000/similar_players?${params.toString()}`, {
+            const res = await fetch (`${API_URL}?${params.toString()}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -100,10 +102,12 @@ function App() {
     }
 
     return (
-        <Stack sx={{mt:6, mb:6}} spacing={3}>
-            <Box sx={{display: "flex", justifyContent: "center"}}>
-                <Typography variant="h3">Player Playstyle Scouting</Typography>
-            </Box>
+        <Stack sx={{mt:10, mb:6}} spacing={3}>
+            <Stack sx={{display: "flex", justifyContent: "center", alignItems: "center", gap: 0.5}}>
+                <Typography variant="subtitle1" sx={{width: 600, color: "#ffc107"}}>Krishna Jawale</Typography>
+                <Typography variant="subtitle1" sx={{width: 600, color: "#1db954"}}>Soccer Playstyle Scout 24/25</Typography>
+                <Typography variant="subtitle1" sx={{width: 600}}>A tool that takes in a player name, selected playstyle metrics and custom weights, then uses machine learning to compute and return the 10 most similar players based on the selected parameters. Uses player data from the top 5 leagues during the 24/25 season.</Typography>
+            </Stack>
             <Grid container spacing={4} sx={{display: "flex", justifyContent: "center"}}>
                 <TextField
                     label="Player Name"
@@ -116,7 +120,7 @@ function App() {
                 </TextField>
             </Grid>
             <Grid container spacing={4} sx={{display: "flex", justifyContent: "center"}}>
-                <FormControl sx={{ m: 1, width: 600 }}>
+                <FormControl sx={{ m: 1, width: 500 }}>
                     <InputLabel>Comparison Metrics</InputLabel>
                     <Select
                         multiple
@@ -169,6 +173,8 @@ function App() {
                     value={maxAge}
                     onChange={(e) => setMaxAge(parseInt(e.target.value))}
                 ></TextField>
+            </Grid>
+            <Grid container spacing={2} sx={{display: "flex", justifyContent: "center"}}>
                 <FormControlLabel control={
                         <Checkbox value={PCA} onChange={(e) => setPCA(e.target.checked)}/>
                     } label="PCA Reduction" />
