@@ -80,7 +80,7 @@ def get_similar_players (player_name, metrics, weights, minAge, maxAge, usePCA):
     data = df[columns + stats]
 
     # Filter by ages
-    data = data[(data["Age"] >= minAge) & (data["Age"] <= maxAge)]
+    data = data[((data["Age"] >= minAge) & (data["Age"] <= maxAge)) | (data["Player"] == player_name)]
 
     # Reset dataframe index
     data = data.reset_index(drop=True)

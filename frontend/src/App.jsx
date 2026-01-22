@@ -30,6 +30,7 @@ function App() {
     //player comprison radar/spider chart
     const [statKeys, setStatKeys] = useState([]);
     const [radarData, setRadarData] = useState(null);
+    const [error, setError] = useState(false);
 
     const handleSearch = async () => {
         try {
@@ -68,7 +69,11 @@ function App() {
             //remove first player from array (which is the player we searched for)
             data.shift()
             setSimilarPlayers(data)
+            setError(false)
         } catch (e) {
+            setError(true);
+            setSimilarPlayers([]);
+            setRadarData(null);
             console.log("Error: ", e);
         }
     }
@@ -195,6 +200,16 @@ function App() {
             <Box sx={{display: "flex", justifyContent: "center"}}>
                 <Button variant="contained" size='lg' onClick={handleSearch}>Scout</Button>
             </Box>
+            {error && (
+                <Box sx={{display: "flex", justifyContent: "center"}} mt={10}>
+                    <Typography mt={2} color="error" sx={{width: 320, whiteSpace: 'pre-line'}}>
+                        {`Error fetching results. Please ensure that:
+                        1. Player name is spelled correctly
+                        2. At least 1 comparison metric is selected
+                        3. Age range contains player age`}
+                    </Typography>
+                </Box>
+            )}
             <Grid container spacing={10} alignItems="center" justifyContent="center">
                 <Grid size={4}>
                     <List>
